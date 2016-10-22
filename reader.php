@@ -241,7 +241,10 @@ function open_page() {
 	drawImage(corpus_path + "/" + book_folder + "/" + fileName);
     
     // @@@@ call the set highlight on the iframe with the circle
-    //parent.document.getElementById("iframe-sun").contentWindow.setHighlight('<?php echo $docno; ?>');
+    //Highlight corresponding section in the visualization at the moment a page is opened
+    parent.currentDocno='<?php echo $docno; ?>';
+	parent.document.getElementById("iframe-sun").contentWindow.setHighlight('<?php echo $docno; ?>');//added by jbarriapineda in 10-16
+	
     //parent.window.frames[0].setHighlight('<?php echo $docno; ?>');
 	update_page_list();
 }
@@ -264,6 +267,8 @@ function update_page_list() {
 		document.getElementById('page_next').style.visibility = 'visible';
 	if(document.getElementById('page_prev'))
 		document.getElementById('page_prev').style.visibility = 'visible';
+	
+	
 /*JW : match url-page
 	if(page_disp == <?php echo $end_page; ?>) {
 		document.getElementById('page_next').style.visibility = 'hidden';
@@ -674,6 +679,16 @@ else
 	       }
 	 });
 	*/
+
+function getAncestors(node) {
+  var path = [];
+  var current = node;
+  while (current.parent) {
+    path.unshift(current);
+    current = current.parent;
+  }
+  return path;
+}
 
 </script>
 

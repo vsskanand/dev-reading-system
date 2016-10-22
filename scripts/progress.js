@@ -165,6 +165,20 @@ setInterval(function() {
 		    // top and bottom are between 0 and 100
 		    top = (100 * top / height).toFixed(4);
 		    bottom = (100 * bottom / height).toFixed(4);
+
+		    var filename = readings.contentWindow.filename.innerHTML;//added by jbarriapineda in 16-10
+
+		    //added by jbarriapineda in 16-10
+		    var date = new Date();
+		    //var datetime = date.toISOString().slice(0, 19).replace('T', ' ');
+		    var datetime = date.getFullYear() + '-' +
+						    ('00' + (date.getMonth()+1)).slice(-2) + '-' +
+						    ('00' + date.getDate()).slice(-2) + ' ' + 
+						    ('00' + date.getHours()).slice(-2) + ':' + 
+						    ('00' + date.getMinutes()).slice(-2) + ':' + 
+						    ('00' + date.getSeconds()).slice(-2);
+			var milliseconds = date.getMilliseconds();
+			//end of code added by jbarriapineda
 		    
 		    var len = positionTimes.length;
 		    var last = len > 0 ? positionTimes[len-1] : null;
@@ -178,6 +192,9 @@ setInterval(function() {
 		    
 		    if (sameAsLast) {
 		    	last['time'] += updateDelay;
+		    	//added by jbarriapineda in 16-10
+		    	last['datetime'] = datetime;
+			    last['milliseconds'] = milliseconds;
 		    } else {
 			    var posTime = {
 			      'bookid': bookid,
@@ -186,7 +203,11 @@ setInterval(function() {
 			      'question': question,
 			      'top': top,
 			      'bottom': bottom,
-			      'time': updateDelay
+			      'time': updateDelay,
+			      //added by jbarriapineda in 16-10
+			      'datetime': datetime,
+			      'milliseconds': milliseconds,
+			      'filename':filename
 			    };
 			    
 			    positionTimes.push(posTime);
@@ -195,11 +216,10 @@ setInterval(function() {
 	}
 	//code added by jbarriapineda in 09-29
 	var firstActTracking=window.parent.firstActTracking;
-	console.log(firstActTracking);
-	console.log(window.parent.waitQsPopup);
 	if(firstActTracking){
 		window.parent.firstActTracking=false;
 		if(jQuery(window.parent).scrollTop() + jQuery(window.parent).height() == jQuery(window.parent.document).height()) {
+			console.log("MAX ZOOM");
 			window.parent.waitQsPopup=true;
 			setTimeout(function(){
 				var qs = window.location.search.substring(1);
@@ -226,7 +246,8 @@ setInterval(function() {
 					data: json,
 					success: function(data) {
 						//TODO: error checking... (error callback)
-						document.getElementById("hidden-question-status").click();
+						console.log($("#hidden-question-status"));
+						$("#hidden-question-status").click();
 					}
 				});
 				
@@ -235,7 +256,9 @@ setInterval(function() {
 		}
 	}
 	else{
-		if(jQuery(window.parent).scrollTop() + jQuery(window.parent).height() == jQuery(window.parent.document).height() && !window.parent.waitQsPopup) {
+		console.log(jQuery(window.parent).scrollTop() + jQuery(window.parent).height());
+		if(jQuery(window.parent).scrollTop() + jQuery(window.parent).height() >= 0.9*jQuery(window.parent.document).height() & !window.parent.waitQsPopup) {
+			window.parent.waitQsPopup=true;
 			var qs = window.location.search.substring(1);
 		    var map = parseQs(qs);
 		    var grp = map['grp'];
@@ -260,7 +283,8 @@ setInterval(function() {
 				data: json,
 				success: function(data) {
 					//TODO: error checking... (error callback)
-					document.getElementById("hidden-question-status").click();
+					console.log($("#hidden-question-status"));
+					$("#hidden-question-status").click();
 				}
 			});
 			
@@ -296,6 +320,7 @@ setInterval(function() {
 			contentType: 'application/json',
 			data: json,
 			success: function(data) {
+				console.log(data);
 				//TODO: error checking... (error callback)
 				//document.getElementById("hidden-question-status").click();//code commented by jbarriapineda in 29-09
 			}

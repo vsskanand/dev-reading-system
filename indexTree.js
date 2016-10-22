@@ -24,7 +24,8 @@ $(document).ready(function(){
 
             // read the lectures and display the name for each
             $.each(result.children, function(i_lecture, lecture){
-                var lecture_content = "<h5>" + lecture.title + "</h5>";
+                console.log(lecture);
+                var lecture_content = "<h5 id='readingid-"+lecture.docno+"'>" + lecture.title + "</h5>";
                 var chapter_content = "<ul>";
 
                 if(lecture.children.length > 0){
@@ -61,14 +62,14 @@ $(document).ready(function(){
 										subsection_docids.add(leaf_id + "@" + leaf_docno);
 										
                                         leaf_content = leaf_content +
-                                            '<li> <a class="doclink ' + 'docid-' + leaf_id + '" href="#" id="readingid-' + leaf_docno + '" onclick="javascript:parent.parent.frames[\'iframe-content\'].location = \'' + reader_url + '?bookid='
+                                            '<li> <a class="doclink ' + 'docid-' + leaf_id + '" href="#" id="readingid-' + leaf_docno + '" onclick=javascript:parent.parent.frames[\'iframe-content\'].location = \'' + reader_url + '?bookid='
                                             + leaf_bookid + '&docno=' + leaf_docno + '&usr='+ usr + '&grp=' + grp + '&sid=' + sid + '&page=1' +'\';">' +
                                             leaf.name + '</a></li>';
                                     });
                                 }
                                 leaf_content = leaf_content + "</ul>";
                                 reading_content = reading_content +
-                                    '<li> <a href="#" style="font-weight:bold;font-size:20px" class="qmark doclink docid-' + reading_id + '" onclick="javascript:parent.parent.frames[\'iframe-content\'].location = \''+reader_url+'?bookid='
+                                    '<li> <a href="#" style="font-weight:bold;font-size:20px" class="qmark doclink docid-' + reading_id + '" onclick=javascript:parent.parent.frames[\'iframe-content\'].location = \''+reader_url+'?bookid='
                                     + reading_bookid + '&docno=' + reading_docno + '&usr='+ usr + '&grp=' + grp + '&sid='+ sid + '&page=1&fromHierarchical=tree' +'\';">?</a>&nbsp;&nbsp;<a id="readingid-' + reading_docno + '" class="doclink ' + 'docid-' + reading_id + '" href="#" onclick="javascript:parent.parent.frames[\'iframe-content\'].location = \''+reader_url+'?bookid='
                                     + reading_bookid + '&docno=' + reading_docno + '&usr='+ usr + '&grp=' + grp + '&sid='+ sid + '&page=1' +'\';">' +
                                     reading.name + '</a>'+ leaf_content + '</li>';
@@ -86,7 +87,7 @@ $(document).ready(function(){
                         // @@@@ different book. If the model represents only one book, it is not good to repeat the book name 
                         // @@@@ Another global variable from DB must tell the visualization if multiple books or not
                         chapter_content = chapter_content +
-                            '<li><h5>BOOK:' + bookName + '<br/><a class="doclink" style = "color:black" href="#" onclick="javascript:parent.parent.frames[\'iframe-content\'].location = \''+reader_url+'?bookid='
+                            '<li><h5 id="readingid-'+chapter_docno+'">BOOK:' + bookName + '<br/><a class="doclink" style = "color:black" href="#" onclick="javascript:parent.parent.frames[\'iframe-content\'].location = \''+reader_url+'?bookid='
                             + chapter_bookid + '&docno=' + chapter_docno + '&usr='+ usr + '&grp=' + grp + '&sid='+ sid + '&page=1' +'\';">' +
                             chapter.name + '</a></h5>' + reading_content + '</li>';
                     });
@@ -111,6 +112,7 @@ $(document).ready(function(){
     var questionStatusButton = document.getElementById("toggle-question-status");
 	var hiddenQuestionStatusButton = document.getElementById("hidden-question-status");
     var indexElement = document.getElementById("index");
+
     
 //    var data = {
 //	        'docids': Object.keys(docIdSet),
@@ -125,6 +127,7 @@ $(document).ready(function(){
 	  var currentPage = parent.parent.frames['iframe-content'].document.getElementById('current-page');
 	  var docid = parent.parent.frames['iframe-content'].document.getElementById('reader-docid');
 	  var current_reader_url = parent.parent.frames['iframe-content'].location.href;
+      console.log("POUP WHEN REACHING END");
 	  //console.log("currentPage: " + currentPage.value + " docid: " + docid.value + "   MaxPage:" + docIdMaxpage[docid.value]);
 	  
 	  // See whether we need to pop up a question page for readers.
@@ -133,9 +136,11 @@ $(document).ready(function(){
 		 && currentPage != null && currentPage.value == docIdMaxpage[docid.value]) {
 		//pops up a window.
 		// if questions are not displayed.
+
 		if(pendingAnswers==-1 && !window.parent.skippedQuestions[docid.value] && parent.frames['iframe-content'].document.getElementById('question').style.display == 'none') {//modified by jbarriapineda in 29-09
 		  //parent.parent.frames['iframe-content'].location.href = current_reader_url.replace("&fromHierarchical=tree", "") + "&fromHierarchical=tree";
-		  displayQuestions();
+		  
+          displayQuestions();
 		}
 	  }
 	}
@@ -293,4 +298,5 @@ function displayQuestions(){
         alert("not ready");
     }
 }
+
 //end of code added by jbarriapineda

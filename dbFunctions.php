@@ -43,7 +43,7 @@ function insertTracking($usr, $grp, $sid, $actionsrc, $actiontype, $docsrc, $doc
     return $id;
 }
 
-function insertProgress($usr, $grp, $sid, $bookid, $docno, $page, $question, $top, $bottom, $time) {
+/*function insertProgress($usr, $grp, $sid, $bookid, $docno, $page, $question, $top, $bottom, $time) {
     $docInfo = getDocInfo($docno);
 	$start_page = $docInfo["spage"];
 	$current_page = $start_page + $page - 1;
@@ -63,7 +63,28 @@ function insertProgress($usr, $grp, $sid, $bookid, $docno, $page, $question, $to
         }
         dbDisconnectMySQL($connection);
     }
-}
+}*///commented by jbarriapineda in 10-16
+
+//code added by jbarriapineda in 10-08
+//function for tracking students progress using the new data model
+function insertProgress($usr, $grp, $sid, $pagefileid, $question, $top, $bottom, $time, $datetime, $milliseconds) {
+    //$docInfo = getDocInfo($docno);
+    //$start_page = $docInfo["spage"];
+    //$current_page = $start_page + $page - 1;
+    
+    global $config_dbHost, $config_dbUser, $config_dbPass, $config_dbName, $config_dbPort;      
+    //$sql = "SELECT docno, (".$current_page." - spage + 1) AS page FROM document WHERE spage <= ".$current_page." && epage //>= ".$current_page." AND docsrc = '".$bookid."'";
+
+    $sql = "INSERT INTO progress2 (date,usr,grp,sid,pagefileid,question,top,bottom,time,datetime,milliseconds)"." VALUES (now(),'".$usr."','".$grp."','".$sid."','".$pagefileid."','".$question."','".$top."','".$bottom."','".$time."','".$datetime."','".$milliseconds."')";
+    $connection = dbConnectMySQL($config_dbHost, $config_dbUser, $config_dbPass, $config_dbName, $config_dbPort);
+    
+    if ($connection){
+        $res = mysqli_query($connection, $sql);
+        dbDisconnectMySQL($connection);
+    }
+    //echo "dbFunctions";
+}//end of code added by jbarriapineda
+
 
 function insertProgressForEach($usr, $grp, $sid, $bookid, $docno, $page, $question, $top, $bottom, $time) {
    $mysqli = getConn();
@@ -73,9 +94,10 @@ function insertProgressForEach($usr, $grp, $sid, $bookid, $docno, $page, $questi
 	$stmt->fetch();
 }
 
-function getTotalPageReadForDocs($usr, $grp, $all_docnos) {
+function getTotalPageReadForDocs($usr, $grp, $all_docnos) {//modify for getting read pages
 	global $config_dbHost, $config_dbUser, $config_dbPass, $config_dbName, $config_dbPort;	    
     $sql = "SELECT docno, COUNT(DISTINCT page) AS numPage FROM progress WHERE usr = '".$usr."' AND grp = '".$grp."' AND docno in ".$all_docnos. " GROUP BY docno";
+    
 	//echo $sql."\n";
     $connection = dbConnectMySQL($config_dbHost, $config_dbUser, $config_dbPass, $config_dbName, $config_dbPort);
 	$docid_pages = array();

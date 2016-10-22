@@ -173,11 +173,13 @@ $.ajax({
                 
                 dialogText = dialogText + '<ul>';
                 
-                currentDocno = d.docno;
-                //alert(currentDocno);
+                parent.currentDocno = d.docno;
+                //alert(parent.currentDocno);
                 
                 // select the branch clicked
-                d3.selectAll("path").style("opacity", 0.3);
+                d3.selectAll("path")
+                    .style("stroke","#fff")
+                    .style("opacity", 0.3);
 
                 // Then highlight only those that are an ancestor of the current segment.
                 var sequenceArray = getAncestors(d);
@@ -186,6 +188,7 @@ $.ajax({
                     .filter(function(node) {
                         return (sequenceArray.indexOf(node) >= 0);
                     })
+                    .style("stroke","#000")
                     .style("opacity", 1);
 
 
@@ -284,6 +287,7 @@ $.ajax({
 
                 parent.$("#readings").attr('src', goToLink);
 
+                updateIndexView(parent.currentDocno);
                 return false;
             }
 
@@ -331,10 +335,12 @@ $.ajax({
             }
 
             function mouseout(d, i) {
-				d3.select(g[0][i]).select("path").style("stroke","#fff");			
+				//d3.select(g[0][i]).select("path").style("stroke","#fff");		
+                d3.selectAll("path").style("stroke","#fff");           	
 				d3.select(g[0][i]).style("stroke-width", "1");				
 				d3.select(g[0][i]).style("opacity", 1);
-                setHighlight(currentDocno);
+                console.log("parent.currentDocno "+parent.currentDocno);
+                setHighlight(parent.currentDocno);
                 /* BEGIN iframe selection */
                 if (d.type == "lecture") {
                     //parent.frames['iframe-sm'].selectFunction('arc' + (d.name.replace(/ /g, "-")), 1);
@@ -362,7 +368,7 @@ $.ajax({
             }
 
             reloadChartDetail();
-            setHighlight(currentDocno);
+            setHighlight(parent.currentDocno);
         });
 
         function searchParent(node) {
@@ -391,7 +397,7 @@ $.ajax({
         }
     }
     
-    //setHighlight(currentDocno);
+    //setHighlight(parent.currentDocno);
 });
 
 // Given a node in a partition layout, return an array of all of its ancestor
@@ -425,7 +431,9 @@ function setHighlight(docno){
         return;
 
     // Fade all the segments.
-    d3.selectAll("path").style("opacity", 0.3);
+    d3.selectAll("path")
+        .style("stroke","#fff")
+        .style("opacity", 0.3);
 
     // Then highlight only those that are an ancestor of the current segment.
     var sequenceArray = getAncestors(d);
@@ -434,6 +442,7 @@ function setHighlight(docno){
         .filter(function(node) {
             return (sequenceArray.indexOf(node) >= 0);
         })
+        .style("stroke","#000")
         .style("opacity", 1);
      if(d.type == "lecture"){
          $("#tip").html(d.title);
@@ -442,5 +451,14 @@ function setHighlight(docno){
          $("#tip").html("[Book] <b>" + bookName + "</b>:<br />" + d.name);
      }
      $("#tip").css("color","#000000");
+}
+
+function updateIndexView(docno){
+    //Added by jbarriapineda in 10-10 in order to center the index into the right subsection after clicking the visualization
+    var element_current_doc = window.parent.document.getElementById('readingid-' + docno);
+    //setTimeout(function(){
+        element_current_doc.scrollIntoView();
+    //},500);
+    
 }
 
